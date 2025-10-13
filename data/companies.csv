@@ -1,0 +1,101 @@
+id,industry_id,company_name,company_size,company_type,company_headquarters,company_website,company_description
+0,2,Quantum Finance Group,201-500,Public,"New York, USA",https://quantumfinancegroup.com,"Quantum Finance Group specializes in wealth management, offering investment solutions for global clients."
+1,2,GreenVest Capital,51-200,Private,"London, UK",https://greenvestcapital.com,GreenVest Capital focuses on sustainable investments and ethical finance services across the UK and Europe.
+2,5,AeroMax Solutions,5000+,Multinational,"Berlin, Germany",https://aeromaxsolutions.com,AeroMax Solutions is a leader in aerospace manufacturing and innovation for defense and commercial sectors.
+3,3,HealthSync Systems,1001-5000,Enterprise,"San Francisco, USA",https://healthsyncsystems.com,HealthSync Systems provides cutting-edge health IT solutions for hospitals and clinics worldwide.
+4,12,TurboTransit Corp,501-1000,Government,"Dubai, UAE",https://turbotransitcorp.com,TurboTransit Corp manages public transportation networks across major cities in the Middle East.
+5,4,WellCare Pharmaceuticals,5000+,Private,"Mumbai, India",https://wellcarepharma.com,WellCare Pharmaceuticals focuses on innovative drug development and personalized healthcare solutions.
+6,1,Insight Consulting,51-200,Cooperative,"Toronto, Canada",https://insightconsulting.com,Insight Consulting offers business strategy and operational optimization services for global enterprises.
+7,18,Skyline Properties,201-500,Private,"Sydney, Australia",https://skylineproperties.com,Skyline Properties specializes in commercial and residential real estate development across Australia.
+8,0,AccuStrategy Group,11-50,Public,"Paris, France",https://accustrategygroup.com,AccuStrategy Group offers consulting services focused on market research and competitive intelligence.
+9,19,EcoMotors Corp,501-1000,Enterprise,"Tokyo, Japan",https://ecomotors.com,EcoMotors Corp develops electric vehicle technologies and promotes green mobility solutions.
+10,4,Medica Health,201-500,Startup,"Boston, USA",https://medicahealth.com,Medica Health innovates in the field of telemedicine and remote diagnostics.
+11,7,TeleLink Networks,5000+,Public,"Berlin, Germany",https://telelinknetworks.com,TeleLink Networks provides next-gen telecommunications solutions across Europe.
+12,5,Global Aerospace,1001-5000,Public,"Seattle, WA",https://globalaerospace.com,Global Aerospace leads innovations in aircraft manufacturing and space exploration technologies.
+13,9,ConstructCo,201-500,Private,"Dubai, UAE",https://constructco.com,ConstructCo specializes in large-scale infrastructure and commercial real estate projects.
+14,8,SolarNext Energy,51-200,Startup,"San Francisco, USA",https://solarnext.com,SolarNext Energy pioneers solar technology solutions for homes and businesses.
+15,10,ShopEase,501-1000,Private,"Paris, France",https://shopease.com,ShopEase provides e-commerce solutions for retail chains globally.
+16,14,AgroFarm Ltd,201-500,Enterprise,"Mumbai, India",https://agrofarm.com,AgroFarm Ltd integrates technology in agriculture to boost productivity.
+17,15,LawEdge Solutions,51-200,Public,"London, UK",https://lawedge.com,LawEdge Solutions offers innovative legal services and compliance solutions.
+18,3,MediPlus Inc,501-1000,Private,"Berlin, Germany",https://mediplus.com,MediPlus Inc provides healthcare software solutions and hospital management systems.
+19,12,EasyRide,1001-5000,Government,"Tokyo, Japan",https://easyride.com,EasyRide is a public transport provider offering sustainable and efficient transit solutions.
+20,6,EduWorld,201-500,Nonprofit,"Toronto, Canada",https://eduworld.org,EduWorld focuses on providing quality education through online platforms.
+21,19,AutoFusion,1001-5000,Multinational,"Detroit, USA",https://autofusion.com,AutoFusion develops electric and autonomous vehicle technology.
+22,11,Global Freight,5000+,Private,"Sydney, Australia",https://globalfreight.com,Global Freight offers logistics and supply chain management solutions worldwide.
+23,13,VacayDream,51-200,Private,"New York, USA",https://vacaydream.com,VacayDream curates luxury travel experiences and vacation packages.
+24,17,StreamLine Entertainment,201-500,Startup,"Los Angeles, USA",https://streamline.com,StreamLine Entertainment focuses on live streaming and interactive media content.
+25,0,ClearPath Advisors,11-50,Cooperative,"Chicago, USA",https://clearpathadvisors.com,ClearPath Advisors offers strategic consulting services for startups and SMEs.
+26,9,BuildMaster,501-1000,Public,"London, UK",https://buildmaster.com,BuildMaster is a leader in sustainable construction practices.
+27,14,GreenHarvest,201-500,Private,"Sydney, Australia",https://greenharvest.com,GreenHarvest integrates vertical farming technology for urban areas.
+28,6,TeachForward,11-50,Nonprofit,"San Francisco, USA",https://teachforward.org,TeachForward provides personalized online tutoring for underserved communities.
+29,16,FilmWorks Studios,1001-5000,Private,"Berlin, Germany",https://filmworks.com,FilmWorks Studios is a leader in digital film production and content distribution.
+30,11,ShipSecure Logistics,5000+,Multinational,"Rotterdam, Netherlands",https://shipsecure.com,ShipSecure Logistics specializes in global supply chain management and freight solutions.
+31,10,StyleHub,51-200,Startup,"Milan, Italy",https://stylehub.com,StyleHub curates fashion products and offers personalized e-commerce experiences.
+32,16,ShowBiz Entertainment,1001-5000,Private,"Los Angeles, USA",https://showbizent.com,"ShowBiz Entertainment produces films, TV shows, and online content for global audiences."
+33,8,EcoVolt Energy,201-500,Enterprise,"Austin, USA",https://ecovolt.com,EcoVolt Energy develops sustainable energy solutions focusing on solar and wind power.
+34,18,UrbanNest Realty,201-500,Private,Singapore,https://urbannest.com,UrbanNest Realty specializes in urban property development and real estate investment.
+35,13,WanderLust Travel,51-200,Startup,"Vancouver, Canada",https://wanderlust.com,WanderLust Travel offers personalized travel packages and unique adventure experiences.
+36,7,NextGen Telecom,5000+,Public,"London, UK",https://nextgentelecom.com,NextGen Telecom is a pioneer in 5G technology and telecommunications services.
+37,15,LegalPro Services,1001-5000,Enterprise,"Chicago, USA",https://legalpro.com,LegalPro Services offers corporate legal advisory and compliance solutions.
+38,3,WellLife Systems,501-1000,Private,"Sydney, Australia",https://welllife.com,WellLife Systems focuses on digital health solutions and wellness platforms.
+39,4,PharmaCore,201-500,Multinational,"Zurich, Switzerland",https://pharmacore.com,PharmaCore develops innovative pharmaceuticals and medical therapies.
+40,9,BuildX Construction,5000+,Private,"New York, USA",https://buildx.com,BuildX Construction specializes in smart building technology and urban infrastructure projects.
+41,10,RetailMax,201-500,Startup,"San Francisco, USA",https://retailmax.com,RetailMax offers digital retail management solutions with AI-powered insights.
+42,14,FarmWise,51-200,Private,"London, UK",https://farmwise.com,FarmWise integrates robotics and AI to optimize agricultural productivity.
+43,5,SkyLift Technologies,501-1000,Public,"Berlin, Germany",https://skylifttech.com,SkyLift Technologies focuses on drone solutions for aerospace and logistics industries.
+44,18,Prime Realty,1001-5000,Enterprise,"Chicago, USA",https://primerealty.com,Prime Realty develops commercial and residential real estate projects across the USA.
+45,7,ConnectWave Telecom,5000+,Multinational,"Tokyo, Japan",https://connectwave.com,ConnectWave Telecom provides 5G connectivity solutions for businesses and consumers.
+46,16,VirtuView Entertainment,51-200,Startup,"Los Angeles, USA",https://virtuview.com,VirtuView Entertainment creates immersive virtual reality content for gaming and film.
+47,11,ExpressLine,201-500,Government,"Paris, France",https://expressline.com,ExpressLine operates high-speed rail and public transit systems across Europe.
+48,12,TravelSphere,1001-5000,Private,"Sydney, Australia",https://travelsphere.com,TravelSphere offers luxury travel packages and personalized vacation planning.
+49,3,CareTech Solutions,501-1000,Enterprise,"Vancouver, Canada",https://caretech.com,CareTech Solutions provides innovative healthcare technologies for hospitals and clinics.
+50,19,EcoDrive Motors,1001-5000,Private,"Berlin, Germany",https://ecodrive.com,EcoDrive Motors develops electric and hybrid vehicle solutions.
+51,15,ContractPro,201-500,Public,"Chicago, USA",https://contractpro.com,ContractPro provides legal services and compliance management tools for businesses.
+52,0,BlueWave Consulting,11-50,Cooperative,"London, UK",https://bluewave.com,BlueWave Consulting offers strategy and operational consulting services.
+53,8,VoltTech,501-1000,Enterprise,"Austin, USA",https://volttech.com,VoltTech focuses on renewable energy solutions for homes and businesses.
+54,18,MetroRealty,1001-5000,Private,"New York, USA",https://metrorealty.com,MetroRealty manages large-scale real estate developments in urban areas.
+55,17,VistaVision Studios,201-500,Startup,"Los Angeles, USA",https://vistavision.com,VistaVision Studios produces films and TV shows for streaming platforms.
+56,7,TeleCore,5000+,Public,"Tokyo, Japan",https://telecore.com,TeleCore provides 5G networks and telecommunications infrastructure solutions.
+57,11,QuickRoute,201-500,Government,"Paris, France",https://quickroute.com,QuickRoute manages public transportation systems and high-speed rail networks.
+58,14,HarvestCo,51-200,Private,"Sydney, Australia",https://harvestco.com,HarvestCo integrates technology into modern farming practices.
+59,4,MediCore,501-1000,Enterprise,"Zurich, Switzerland",https://medicore.com,MediCore develops advanced pharmaceutical solutions.
+60,10,RetailTech,201-500,Startup,"San Francisco, USA",https://retailtech.com,RetailTech offers AI-powered retail solutions for small businesses.
+61,5,LiftAero,5000+,Multinational,"Seattle, USA",https://liftaero.com,LiftAero manufactures aircraft and drone technologies.
+62,16,PixelPlay,51-200,Private,"Berlin, Germany",https://pixelplay.com,PixelPlay develops interactive gaming content.
+63,6,LearnNow,201-500,Nonprofit,"Toronto, Canada",https://learnnow.org,LearnNow offers free online educational courses.
+64,13,GlobeTrek,1001-5000,Private,"Vancouver, Canada",https://globetrek.com,GlobeTrek provides customized travel packages for adventurers.
+65,4,BioCure Pharmaceuticals,1001-5000,Private,"Zurich, Switzerland",https://biocure.com,BioCure specializes in biotechnology solutions and vaccine development.
+66,12,JetSet Travels,501-1000,Private,"New York, USA",https://jetsettravels.com,JetSet Travels offers luxury travel experiences worldwide.
+67,10,QuickMart,5000+,Public,"London, UK",https://quickmart.com,QuickMart operates retail stores and offers online shopping services.
+68,17,NovaPix Studios,51-200,Startup,"Los Angeles, USA",https://novapix.com,"NovaPix Studios produces content for TV, films, and streaming platforms."
+69,8,PowerGrid Energy,1001-5000,Enterprise,"Berlin, Germany",https://powergrid.com,PowerGrid Energy focuses on sustainable energy solutions and smart grids.
+70,9,UrbanBuild,5000+,Public,"Toronto, Canada",https://urbanbuild.com,UrbanBuild specializes in urban infrastructure and commercial construction projects.
+71,3,VitalHealth Systems,501-1000,Private,"San Francisco, USA",https://vitalhealth.com,VitalHealth Systems develops digital solutions for healthcare providers.
+72,6,EduPath,201-500,Nonprofit,"Chicago, USA",https://edupath.org,EduPath offers personalized learning platforms for students and professionals.
+73,7,TeleNet Solutions,1001-5000,Public,"London, UK",https://telenet.com,TeleNet Solutions provides cloud-based telecommunications services.
+74,13,TravelVista,501-1000,Private,"Vancouver, Canada",https://travelvista.com,TravelVista offers custom travel planning services for adventurers.
+75,16,MediaWorks,201-500,Startup,"Berlin, Germany",https://mediaworks.com,MediaWorks focuses on interactive and digital media production.
+76,15,LawEdge Consulting,1001-5000,Enterprise,"New York, USA",https://lawedge.com,LawEdge Consulting offers corporate legal services and compliance solutions.
+77,18,GreenCity Realty,5000+,Private,"Sydney, Australia",https://greencity.com,GreenCity Realty focuses on sustainable real estate development.
+78,5,SkyTech Aerospace,501-1000,Public,"Seattle, USA",https://skytech.com,SkyTech Aerospace manufactures aircraft and space technology solutions.
+79,19,AutoNext,201-500,Enterprise,"Tokyo, Japan",https://autonext.com,AutoNext develops autonomous and electric vehicle technologies.
+80,3,MediLink Solutions,1001-5000,Enterprise,"Toronto, Canada",https://medilink.com,MediLink Solutions offers healthcare IT systems and patient management software.
+81,6,BrightFuture Learning,201-500,Nonprofit,"San Francisco, USA",https://brightfuture.org,BrightFuture provides free online education for underprivileged students worldwide.
+82,4,PharmaVista,501-1000,Private,"Berlin, Germany",https://pharmavista.com,PharmaVista develops innovative pharmaceutical products for global markets.
+83,7,NetSphere,5000+,Public,"London, UK",https://netsphere.com,NetSphere provides advanced telecommunication services across Europe.
+84,5,AeroFleet,1001-5000,Multinational,"Seattle, USA",https://aerofleet.com,AeroFleet offers fleet management and drone technology for logistics companies.
+85,8,NextGen Power,501-1000,Private,"Austin, USA",https://nextgenpower.com,NextGen Power focuses on developing sustainable energy solutions for residential use.
+86,12,TravelNest,51-200,Startup,"Sydney, Australia",https://travelnest.com,TravelNest offers personalized travel experiences and vacation packages.
+87,17,StarVision Studios,1001-5000,Enterprise,"Los Angeles, USA",https://starvision.com,StarVision Studios produces films and TV content for streaming platforms.
+88,11,CityMove,5000+,Government,"Paris, France",https://citymove.com,CityMove operates public transport systems and smart city mobility solutions.
+89,10,StoreLink,201-500,Private,"New York, USA",https://storelink.com,StoreLink offers digital retail management tools for businesses.
+90,19,AutoSphere,1001-5000,Public,"Tokyo, Japan",https://autosphere.com,AutoSphere specializes in autonomous driving and electric vehicle development.
+91,15,LawSphere,201-500,Private,"London, UK",https://lawsphere.com,LawSphere provides legal tech solutions for law firms and corporate clients.
+92,16,CreativePulse,51-200,Startup,"Berlin, Germany",https://creativepulse.com,CreativePulse creates digital media and entertainment content for global platforms.
+93,9,BuildPro,5000+,Public,"Toronto, Canada",https://buildpro.com,BuildPro offers construction services and infrastructure management solutions.
+94,18,PrimeLiving Realty,1001-5000,Private,"New York, USA",https://primeliving.com,PrimeLiving Realty focuses on luxury real estate development.
+95,0,SmartConsult,51-200,Cooperative,"Chicago, USA",https://smartconsult.com,SmartConsult offers business consulting services for startups and SMEs.
+96,14,FarmEdge,201-500,Enterprise,"Mumbai, India",https://farmedge.com,FarmEdge integrates technology into modern farming practices.
+97,4,MediNext,1001-5000,Enterprise,"Zurich, Switzerland",https://medinext.com,MediNext develops pharmaceuticals and healthcare solutions.
+98,7,ComLink,5000+,Public,"Tokyo, Japan",https://comlink.com,ComLink provides next-gen telecom services across Asia.
+99,13,GlobeTrotter,501-1000,Private,"Vancouver, Canada",https://globetrotter.com,GlobeTrotter offers unique travel experiences for adventure enthusiasts.
