@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 # 1. Connect to the client 
-client = MongoClient(host="localhost", port=27017)
+client = MongoClient(host="localhost", port=5000)
 
 # Import the utils module
 utils = SourceFileLoader('*', './app/utils.py').load_module()
