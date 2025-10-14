@@ -41,6 +41,9 @@ Provide a broad overview of the purpose of the project.
 
 Describe the data - what kind of data is it?  Describe the general format, and potential quirks.
 
+# Add this somewhere
+I decided to center the data to be "job centric." This makes the most sense as the jobs are the heart of the site. Other collections may be required based on requirements for the project, but my initial idea is to 
+
 ## Data security
 
 If there are any security concerns or requirements regarding the data, they should be described here.

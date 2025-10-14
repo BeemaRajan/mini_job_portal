@@ -17,10 +17,9 @@ client = MongoClient(host="localhost", port=27017)
 utils = SourceFileLoader('*', './app/utils.py').load_module()
 
 # 2. Select the database
-db = client.mydb # 'use mydb'
+db = client.careerhub # db name: careerhub
 # Select the collection
-collection = db.customers 
-
+collection = db.jobs 
 
 # route decorator that defines which routes should be navigated to this function
 @app.route("/") # '/' for directing all default traffic to this function get_initial_response()
