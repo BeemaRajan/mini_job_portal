@@ -4,5 +4,6 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - C:\\Users\\cdabe\\Desktop\\DS 5760 - NoSQL\\day13-mongo-flask\\day13-mongo-flask:/ds5760/mongo
+      - ./:/app-files/
+    working_dir: /app-files/
 

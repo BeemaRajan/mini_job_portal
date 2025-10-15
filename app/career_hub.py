@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 # 1. Connect to the client 
-client = MongoClient(host="localhost", port=5000)
+client = MongoClient(host="localhost", port=27017)
 
 # Import the utils module
 utils = SourceFileLoader('*', './app/utils.py').load_module()
@@ -29,216 +29,381 @@ def get_initial_response():
     message = {
         'apiVersion': 'v1.0',
         'status': '200',
-        'message': 'Hello world!!!!!!!'
+        'message': 'Welcome to the career hub!'
     }
     resp = jsonify(message)
     # Returning the object
     return resp
 
-# localhost:5000/api/v1/customers
-@app.route("/api/v1/customers", methods=['GET'])
-def fetch_customers():
+@app.route("/create/jobPost", methods=['POST'])
+def create_job_post():
     '''
-       Function to fetch all customers matching a query
+    Create a new job posting
+    
+    required fields:
+    - title: job title (string)
+    - company: company object with at least a name (object)
+    - posting_date: date the job was posted (string)
+    
+    optional fields: description, industry, education_required, skills_required, etc.
     '''
     try:
-        # Call the function from utils to get the query params
-        query_params = utils.parse_query_params(request.query_string)
+        # get json data from request body
+        body = request.get_json()
+        
+        # check if request body is provided
+        if not body:
+            return jsonify({
+                "error": "Request body is required",
+                "message": "Please provide job posting data in JSON format"
+            }), 400
+        
+        # validate 'title' field
+        if 'title' not in body or not body['title'] or body['title'].strip() == '':
+            return jsonify({
+                "error": "Validation failed",
+                "message": "Field 'title' is required and cannot be empty"
+            }), 400
+        
+        # validate 'company' field
+        if 'company' not in body:
+            return jsonify({
+                "error": "Validation failed",
+                "message": "Field 'company' is required"
+            }), 400
+        
+        # if company is provided, ensure it has a 'name' field
+        if isinstance(body['company'], dict):
+            if 'name' not in body['company'] or not body['company']['name'] or body['company']['name'].strip() == '':
+                return jsonify({
+                    "error": "Validation failed",
+                    "message": "Field 'company.name' is required and cannot be empty"
+                }), 400
+        else:
+            return jsonify({
+                "error": "Validation failed",
+                "message": "Field 'company' must be an object with a 'name' field"
+            }), 400
+        
+        # validate 'posting_date' field
+        if 'posting_date' not in body or not body['posting_date'] or str(body['posting_date']).strip() == '':
+            return jsonify({
+                "error": "Validation failed",
+                "message": "Field 'posting_date' is required and cannot be empty"
+            }), 400
+        
+        # insert into mongodb
+        record_created = collection.insert_one(body)
+        
+        # success response
+        if record_created.inserted_id:
+            # get the inserted document to return the job_id if it exists
+            inserted_doc = collection.find_one({"_id": record_created.inserted_id})
             
-        # Check if records were found in DB
-        # {}
-        # db.collection.countDocuments({})
-        if collection.count_documents(query_params) > 0:
-            # fetch customers by query parameters
-            records_fetched = collection.find(query_params)
-
-            # Prepare the response
-            return dumps(records_fetched)
-        else:
-            return 'No records are found', 404
-
+            response = {
+                "message": "Job post created successfully",
+                "inserted_id": str(record_created.inserted_id)
+            }
+            
+            # if the document has a job_id field, include it
+            if inserted_doc and 'job_id' in inserted_doc:
+                response["job_id"] = inserted_doc['job_id']
+            
+            return jsonify(response), 201
+        
     except Exception as e:
-        # Error while trying to fetch the resource
-        # Add message for debugging purpose
-        return e, 500
+        # error while trying to create the job post
+        print(f"Error creating job post: {e}")
+        return jsonify({
+            "error": "Server error",
+            "message": "An error occurred while creating the job post"
+        }), 500
 
-# localhost:5000/api/v1/get_customer_by_id/5ca4bbcea2dd94ee58162a6f
-@app.route('/api/v1/get_customer_by_id/<document_id>', methods=['GET'])
-def get_by_id(document_id):
+# localhost:5000/view_jobs_by_id/1
+@app.route('/view_jobs_by_id/<int:job_id>', methods=['GET'])
+def view_jobs_by_id(job_id):
+    '''
+    Retrieve full details for a single job by its unique job_id
+    '''
     try:
-        # Convert string to ObjectId
-        obj_id = ObjectId(document_id)
+        # query the document by job_id field
+        result = collection.find_one({"job_id": job_id})
         
-        # Query the document
-        result = collection.find_one({"_id": obj_id})
-        
-        # If document not found
+        # if document not found
         if not result:
-            return jsonify({"message": "Document not found"}), 404
+            return jsonify({
+                "error": "Job not found",
+                "message": f"No job found with job_id: {job_id}"
+            }), 404
         
-        # Convert ObjectId to string for JSON serialization
+        # convert ObjectId to string for json serialization
         result['_id'] = str(result['_id'])
-        return jsonify(result)
+        return jsonify(result), 200
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({
+            "error": "Bad request",
+            "message": str(e)
+        }), 400
 
-
-@app.route("/api/v1/customers", methods=['POST'])
-def create_customers():
+# localhost:5000/jobs/industry/finance
+@app.route('/jobs/industry/<industry_name>', methods=['GET'])
+def get_jobs_by_industry(industry_name):
     '''
-       Function to create new customer(s)
-    '''
-    try:
-        # Create new users
-        try:
-            body = ast.literal_eval(json.dumps(request.get_json()))
-        except:
-            # Bad request as request body is not available
-            # Add message for debugging purpose
-            return "", 400
-
-        record_created = collection.insert_many(body)
-
-        if record_created:
-            inserted_id = record_created.inserted_ids
-            # Prepare the response
-            if isinstance(inserted_id, list):
-                # Return list of Id of the newly created item
-
-                ids = []
-                for _id in inserted_id:
-                    ids.append(str(_id))
-
-                return jsonify(ids), 201
-            else:
-                # Return Id of the newly created item
-                return jsonify(str(inserted_id)), 201
-    except Exception as e:
-        # Error while trying to create customers
-        # Add message for debugging purpose
-        print(e)
-        return 'Server error', 500
-
-
-# `app.route()` can send arguments to the function: customers_id
-# Note: arguments are string type by default, so convert your args as needed
-@app.route("/api/v1/customers/<customer_username>", methods=['POST'])
-def update_user(customer_username):
-    '''
-       Function to update the user.
-    '''
-    try:
-        # Get the value which needs to be updated
-        try:
-            body = ast.literal_eval(json.dumps(request.get_json()))
-            print(body)
-        except Exception as e:
-            # Bad request as the request body is not available
-            # Add message for debugging purpose
-            return '', 400
-
-        # Updating the user
-        records_updated = collection.update_one({'username': customer_username}, body)
-
-        # Check if resource is updated
-        if records_updated.modified_count > 0:
-            # Prepare the response as resource is updated successfully
-            return records_updated.raw_result, 200
-        else:
-            # Bad request as the resource is not available to update
-            # Add message for debugging purpose
-            return 'No modification was made to customer', 304
-    except Exception as e:
-        # Error while trying to update the resource
-        # Add message for debugging purpose
-        print(e)
-        return 'Server error', 500
-
-
-@app.route("/api/v1/customers/<customer_username>", methods=['DELETE'])
-def remove_user(customer_username):
-    """
-       Function to remove the user.
-       """
-    try:
-        # Delete the user
-        delete_user = collection.delete_one({"username": customer_username})
-
-        print(delete_user.raw_result)
-        if delete_user.deleted_count > 0 :
-            # Prepare the response
-            return 'Customer removed', 204
-        else:
-            # Resource not found
-            return 'Customer not found', 404
-    except Exception as e:
-        # Error while trying to delete the resource
-        # Add message for debugging purpose
-        print(e)
-        return "", 500
+    Return jobs by industry name
     
-@app.route('/customers_by_birthdate', methods=['GET'])
-def get_customers_by_birthdate():
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    active_status = request.args.get('active', type=bool)
-
-    if not start_date or not end_date:
-        return jsonify({"error": "Both start_date and end_date parameters are required"}), 400
-
-    # Convert string dates to datetime objects
+    path parameter:
+    - industry_name: name of the industry (case-insensitive)
+    '''
     try:
-        start_date = datetime.strptime(start_date, "%Y-%m-%d")
-        end_date = datetime.strptime(end_date, "%Y-%m-%d")
-    except ValueError:
-        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
+        # query for industry.name since it is nested
+        # using mongodb's collation feature for case-insensitive comparison
+        jobs = collection.find({
+            "industry.name": industry_name
+        }).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found for industry: {industry_name}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "industry": industry_name,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
 
-    customers = collection.find({
-        "birthdate": {
-            "$gte": start_date,
-            "$lte": end_date
-        },
-        "active": active_status
-    })
-
-    # Convert ObjectId to string for each document
-    results = []
-    for document in customers:
-        document["_id"] = str(document["_id"])
-        results.append(document)
-
-    return jsonify(list(results))
-
-# localhost:5000/insert_customer
-@app.route('/insert_customer', methods=['POST'])
-def insert_customer():
-    data = request.json
-
-    # Ensure necessary fields are provided
-    if not data or 'birthdate' not in data:
-        return jsonify({"error": "birthdate field is required"}), 400
-
+# localhost:5000/jobs_by_salary_range/salary?min_salary=80000&max_salary=120000
+@app.route('/jobs_by_salary_range/salary', methods=['GET'])
+def get_jobs_by_salary_range():
+    '''
+    Query jobs based on a salary range
+    
+    query parameters:
+    - min_salary: minimum salary (integer)
+    - max_salary: maximum salary (integer)
+    '''
     try:
-        # Convert birthdate string to datetime object
-        birthdate = datetime.strptime(data['birthdate'], "%Y-%m-%d")
-    except ValueError:
-        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
+        # get query parameters from the url
+        min_salary = request.args.get('min_salary')
+        max_salary = request.args.get('max_salary')
+        
+        # validate that both parameters are provided
+        if not min_salary or not max_salary:
+            return jsonify({
+                "error": "Bad request",
+                "message": "Both min_salary and max_salary query parameters are required"
+            }), 400
+        
+        # convert to integers
+        try:
+            min_salary = int(min_salary)
+            max_salary = int(max_salary)
+        except ValueError:
+            return jsonify({
+                "error": "Bad request",
+                "message": "min_salary and max_salary must be valid integers"
+            }), 400
+        
+        # validate that min is less than or equal to max
+        if min_salary > max_salary:
+            return jsonify({
+                "error": "Bad request",
+                "message": "min_salary cannot be greater than max_salary"
+            }), 400
+        
+        # query jobs within the salary range using $gte and $lte
+        jobs = collection.find({
+            "average_salary": {
+                "$gte": min_salary,
+                "$lte": max_salary
+            }
+        })
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found with salary between ${min_salary:,} and ${max_salary:,}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "min_salary": min_salary,
+            "max_salary": max_salary,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
 
-    # Replace the birthdate string with the datetime object
-    data['birthdate'] = birthdate
+# localhost:5000/jobs/location/New York, USA
+@app.route('/jobs/location/<path:location>', methods=['GET'])
+def get_jobs_by_location(location):
+    '''
+    Return jobs available in a specific location
+    
+    path parameter:
+    - location: job location (handles spaces and commas via URL encoding)
+    '''
+    try:
+        # query jobs by location (case-insensitive using collation)
+        # flask automatically decodes url-encoded characters
+        jobs = collection.find({
+            "company.headquarters": location
+        }).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found for location: {location}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "location": location,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
 
-    # Insert into MongoDB
-    inserted_id = collection.insert_one(data).inserted_id
+# localhost:5000/jobs/skill/Python
+@app.route('/jobs/skill/<skill_name>', methods=['GET'])
+def get_jobs_by_skill(skill_name):
+    '''
+    Return jobs that require a given skill
+    
+    path parameter:
+    - skill_name: name of the required skill (case-insensitive)
+    '''
+    try:
+        # query jobs where skills_required array contains the skill
+        # collation makes it case-insensitive
+        jobs = collection.find({
+            "skills_required": skill_name
+        }).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found requiring skill: {skill_name}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "skill": skill_name,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
 
-    return jsonify({"message": "Insert successful", "inserted_id": str(inserted_id)}), 201
-
-# Recipe
-# step 1: create your endpoint name/path + method
-# step 2: define your view function for the endpoint
-# step 3: do some basic processing/clean up on your user request object
-# step 4: do pymongo calls to interact with your mongodb 
-
+# localhost:5000/jobs/skills/Python&SQL&Excel
+@app.route('/jobs/skills/<path:skill_names>', methods=['GET'])
+def get_jobs_by_multiple_skills(skill_names):
+    '''
+    return jobs that require one or more given skills
+    
+    path parameter:
+    - skill_names: one or more skill names separated by ampersand (&)
+    '''
+    try:
+        # split skill names by ampersand delimiter
+        skills_list = [skill.strip() for skill in skill_names.split('&')]
+        
+        # validate that at least one skill was provided
+        if not skills_list or skills_list == ['']:
+            return jsonify({
+                "error": "Bad request",
+                "message": "At least one skill must be provided"
+            }), 400
+        
+        # build query using $and to ensure ALL skills are present
+        # each condition checks if the skill exists in the array
+        query = {
+            "$and": [
+                {"skills_required": skill} 
+                for skill in skills_list
+            ]
+        }
+        
+        # query jobs where skills_required array contains all specified skills
+        # collation makes the matching case-insensitive
+        jobs = collection.find(query).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found requiring all skills: {', '.join(skills_list)}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "skills": skills_list,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -91,3 +91,9 @@ All files which appear in the repo should be able to run, and not contain error 
 # Contact Info
 
 Add contact information for any project stakeholders. Include name, email and title. 
+
+
+```
+docker-compose exec -it mongodb sh
+mongoimport --db careerhub --collection jobs --file /app-files/data/converted_data.json --jsonArray
+```
