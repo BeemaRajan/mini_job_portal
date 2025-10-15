@@ -43,9 +43,10 @@ def create_job_post():
     required fields:
     - title: job title (string)
     - company: company object with at least a name (object)
+    - industry: industry object with at least a name (object)
     - posting_date: date the job was posted (string)
     
-    optional fields: description, industry, education_required, skills_required, etc.
+    optional fields: description, education_required, skills_required, etc.
     '''
     try:
         # get json data from request body
@@ -83,6 +84,26 @@ def create_job_post():
             return jsonify({
                 "error": "Validation failed",
                 "message": "Field 'company' must be an object with a 'name' field"
+            }), 400
+        
+        # validate 'industry' field
+        if 'industry' not in body:
+            return jsonify({
+                "error": "Validation failed",
+                "message": "Field 'industry' is required"
+            }), 400
+        
+        # if industry is provided, ensure it has a 'name' field
+        if isinstance(body['industry'], dict):
+            if 'name' not in body['industry'] or not body['industry']['name'] or body['industry']['name'].strip() == '':
+                return jsonify({
+                    "error": "Validation failed",
+                    "message": "Field 'industry.name' is required and cannot be empty"
+                }), 400
+        else:
+            return jsonify({
+                "error": "Validation failed",
+                "message": "Field 'industry' must be an object with a 'name' field"
             }), 400
         
         # validate 'posting_date' field
@@ -397,6 +418,419 @@ def get_jobs_by_multiple_skills(skill_names):
             "skills": skills_list,
             "count": len(jobs_list),
             "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+# localhost:5000/jobs/company/Quantum Finance Group
+@app.route('/jobs/company/<path:company_name>', methods=['GET'])
+def get_jobs_by_company(company_name):
+    '''
+    Find jobs by employer (company) name
+    
+    path parameter:
+    - company_name: name of the company (case-insensitive, exact match)
+    '''
+    try:
+        # query jobs by company name (case-insensitive using collation)
+        jobs = collection.find({
+            "company.name": company_name
+        }).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found for company: {company_name}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "company": company_name,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+# localhost:5000/jobs/count/industry
+@app.route('/jobs/count/industry', methods=['GET'])
+def count_jobs_by_industry():
+    '''
+    Returns a count of jobs grouped by industry
+    
+    returns a list where each industry has an associated job count,
+    sorted by count descending
+    '''
+    try:
+        # use aggregation to group by industry and count
+        pipeline = [
+            {
+                "$group": {
+                    "_id": "$industry.name",  # group by industry name
+                    "job_count": {"$sum": 1}  # count jobs in each group
+                }
+            },
+            {
+                "$sort": {"job_count": -1}  # sort by count descending (-1)
+            },
+            {
+                "$project": {
+                    "_id": 0,  # exclude the _id field
+                    "industry": "$_id",  # rename _id to industry
+                    "job_count": 1  # include job_count
+                }
+            }
+        ]
+        
+        # execute the aggregation
+        results = list(collection.aggregate(pipeline))
+        
+        # if no results
+        if not results:
+            return jsonify({
+                "error": "No data found",
+                "message": "No industries found in the database"
+            }), 404
+        
+        return jsonify({
+            "total_industries": len(results),
+            "industries": results
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+
+# localhost:5000/jobs/top/salary
+@app.route('/jobs/top/salary', methods=['GET'])
+def get_top_paying_jobs():
+    '''
+    Returns top 5 jobs by salary
+    
+    returns jobs sorted by average_salary in descending order
+    uses job_id as a secondary sort for deterministic results when salaries ties
+    '''
+    try:
+        # query all jobs, sort by salary descending, then by job_id for deterministic ties
+        # limit to top 5 results
+        jobs = collection.find().sort([
+            ("average_salary", -1),  # primary sort: salary descending
+            ("job_id", 1)             # secondary sort: job_id ascending (for ties)
+        ]).limit(5)
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No data found",
+                "message": "No jobs found in the database"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "count": len(jobs_list),
+            "top_paying_jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+    
+# localhost:5000/jobs/companies
+@app.route('/jobs/companies', methods=['GET'])
+def get_all_companies():
+    '''
+    Returns a unique list of companies that currently have at least one open job
+    '''
+    try:
+        # get distinct company names from all jobs
+        companies = collection.distinct("company.name")
+        
+        # if no companies found
+        if not companies:
+            return jsonify({
+                "error": "No data found",
+                "message": "No companies found in the database"
+            }), 404
+        
+        # sort companies alphabetically
+        companies_sorted = sorted(companies)
+        
+        return jsonify({
+            "count": len(companies_sorted),
+            "companies": companies_sorted
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+# localhost:5000/jobs/degree/Masters
+@app.route('/jobs/degree/<degree_name>', methods=['GET'])
+def get_jobs_by_degree(degree_name):
+    '''
+    Find jobs that require a specific degree
+    
+    path parameter:
+    - degree_name: required degree level (Diploma, Bachelors, Masters, PhD, Other)
+    '''
+    try:
+        # query jobs by degree requirement (case-insensitive using collation)
+        jobs = collection.find({
+            "education_required.level": degree_name
+        }).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found requiring degree: {degree_name}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "degree": degree_name,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+# localhost:5000/jobs/experience?experience_level=Mid Level
+@app.route('/jobs/experience', methods=['GET'])
+def get_jobs_by_experience_level():
+    '''
+    Query jobs based on experience level
+    
+    query parameter:
+    - experience_level: required experience level (e.g., "Entry Level", "Mid Level", "Senior Level")
+    '''
+    try:
+        # get experience_level from query parameters
+        experience_level = request.args.get('experience_level')
+        
+        # validate that experience_level parameter is provided
+        if not experience_level:
+            return jsonify({
+                "error": "Bad request",
+                "message": "experience_level query parameter is required"
+            }), 400
+        
+        # query jobs by experience level (case-insensitive using collation)
+        jobs = collection.find({
+            "experience_level": experience_level
+        }).collation({'locale': 'en', 'strength': 2})
+        
+        # convert cursor to list
+        jobs_list = list(jobs)
+        
+        # if no jobs found
+        if not jobs_list:
+            return jsonify({
+                "error": "No jobs found",
+                "message": f"No jobs found for experience level: {experience_level}"
+            }), 404
+        
+        # convert ObjectId to string for each job
+        for job in jobs_list:
+            job['_id'] = str(job['_id'])
+        
+        return jsonify({
+            "experience_level": experience_level,
+            "count": len(jobs_list),
+            "jobs": jobs_list
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+# localhost:5000/jobs/update/1
+@app.route('/jobs/update/<job_id>', methods=['POST'])
+def update_job_posting(job_id):
+    '''
+    Partially update a job posting by its job_id
+    
+    path parameter:
+    - job_id: unique job identifier (integer)
+    
+    request body: JSON object with fields to update
+    '''
+    try:
+        # convert job_id to integer
+        try:
+            job_id_int = int(job_id)
+        except ValueError:
+            return jsonify({
+                "error": "Bad request",
+                "message": "job_id must be a valid integer"
+            }), 400
+        
+        # get the update data from request body
+        update_data = request.get_json()
+        
+        # check if request body is provided
+        if not update_data:
+            return jsonify({
+                "error": "Bad request",
+                "message": "Request body is required"
+            }), 400
+        
+        # define allowed fields and their expected types
+        allowed_fields = {
+            "title": str,
+            "description": str,
+            "years_of_experience": str,
+            "responsibilities": list,
+            "company": dict,
+            "industry": dict,
+            "education_required": dict,
+            "skills_required": list,
+            "employment_type": str,
+            "average_salary": int,
+            "benefits": list,
+            "remote": bool,
+            "location": str,
+            "job_posting_url": str,
+            "posting_date": str,
+            "closing_date": str,
+            "experience_level": str
+        }
+        
+        # remove job_id from update_data if present (cannot be changed)
+        if "job_id" in update_data:
+            update_data.pop("job_id")
+        
+        # also remove _id if present
+        if "_id" in update_data:
+            update_data.pop("_id")
+        
+        # validate that all fields are allowed
+        unknown_fields = [field for field in update_data.keys() if field not in allowed_fields]
+        if unknown_fields:
+            return jsonify({
+                "error": "Bad request",
+                "message": f"Unknown fields: {', '.join(unknown_fields)}"
+            }), 400
+        
+        # validate field types
+        for field, value in update_data.items():
+            expected_type = allowed_fields[field]
+            if not isinstance(value, expected_type):
+                return jsonify({
+                    "error": "Bad request",
+                    "message": f"Field '{field}' must be of type {expected_type.__name__}"
+                }), 400
+        
+        # check if job exists
+        existing_job = collection.find_one({"job_id": job_id_int})
+        if not existing_job:
+            return jsonify({
+                "error": "Job not found",
+                "message": f"No job found with job_id: {job_id}"
+            }), 404
+        
+        # if no fields to update after validation
+        if not update_data:
+            return jsonify({
+                "message": "No fields to update",
+                "job_id": job_id_int
+            }), 200
+        
+        # perform the update
+        result = collection.update_one(
+            {"job_id": job_id_int},
+            {"$set": update_data}
+        )
+        
+        # return success response
+        return jsonify({
+            "message": "Job post updated successfully",
+            "job_id": job_id_int,
+            "fields_updated": list(update_data.keys()),
+            "modified_count": result.modified_count
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Server error",
+            "message": str(e)
+        }), 500
+
+# localhost:5000/jobs/delete/1
+@app.route('/jobs/delete/<job_id>', methods=['DELETE'])
+def delete_job_posting(job_id):
+    '''
+    Delete a job posting by its job_id
+    
+    path parameter:
+    - job_id: unique job identifier (integer)
+    '''
+    try:
+        # convert job_id to integer
+        try:
+            job_id_int = int(job_id)
+        except ValueError:
+            return jsonify({
+                "error": "Bad request",
+                "message": "job_id must be a valid integer"
+            }), 400
+        
+        # check if job exists before attempting to delete
+        existing_job = collection.find_one({"job_id": job_id_int})
+        if not existing_job:
+            return jsonify({
+                "error": "Job not found",
+                "message": f"No job found with job_id: {job_id}"
+            }), 404
+        
+        # delete the job
+        result = collection.delete_one({"job_id": job_id_int})
+        
+        # return success response
+        return jsonify({
+            "message": "Job post deleted successfully",
+            "job_id": job_id_int,
+            "deleted_count": result.deleted_count
         }), 200
     
     except Exception as e:
